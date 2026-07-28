@@ -1,0 +1,18 @@
+# Ignore object files
+*.o
+
+# Ignore executable files
+*.exe
+
+*.zip
+
+*.tar.gz
+
+*.7z
+
+/tests/testbed/main
+/tests/solar_system/main
+
+# Ignore compiled shaders
+shaders/compiled/
+

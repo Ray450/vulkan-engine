@@ -1,0 +1,88 @@
+#version 450
+
+#extension GL_EXT_nonuniform_qualifier : enable
+
+// Specify the work group size. Adjust as needed.
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+// Binding 0: A storage buffer that holds an array of floats.
+//layout(binding = 0) buffer OutputBuffer {
+//    float data[];
+//};
+
+// layout(binding = 0) buffer InputBuffers {
+//    float inputData[];
+// } inputs[];
+
+layout(binding = 0) buffer InputBuffers {
+    float inputData[];
+};
+
+layout(binding = 1) buffer OutputBuffer {
+    float outputData[];
+};
+
+layout(push_constant) uniform Constants {
+    uint numInputs;
+    uint padding[3];
+} constants;
+
+
+void main() {
+    // Compute a 1D index from the 3D global invocation ID.
+    uint index = gl_GlobalInvocationID.x + 
+                 gl_GlobalInvocationID.y * gl_NumWorkGroups.x * gl_WorkGroupSize.x +
+                 gl_GlobalInvocationID.z * gl_NumWorkGroups.x * gl_WorkGroupSize.x * gl_NumWorkGroups.y * gl_WorkGroupSize.y;
+    
+    // Write the index (converted to float) into the buffer.
+    //if (index != 0) {
+    //    data[index] = float(index);
+    //}
+
+    // outputData[index] = /*inputData[index] + */ float(index) + 4.0;
+
+    // float sum = 20.0;
+    // for (uint i = 0; i < constants.numInputs; i++) {
+        // sum += inputs[i].inputData[index];
+    //}
+
+
+    uint N = constants.numInputs;// / 2;
+    float a = inputData[index];
+    float b = inputData[index + N];
+    float result = a + b;
+
+
+    if (index == 1) {
+        // outputData[1] = constants.numInputs;
+    }
+
+    //outputData[index] = inputData[index] + inputData[index + N]; // im adding the same elements to show you 100 + 100 is giving me 400
+
+    if (index < constants.numInputs) {
+        // outputData[index] = inputData[index] + inputData[index + constants.numInputs];
+    
+        outputData[index] = result;
+    }
+
+    
+
+
+}
+
+
+
+
+/*void main() {
+    uint index = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.x * gl_WorkGroupSize.x;
+    if (index >= 1048576) return;
+    
+    float sum = 0.0;
+    for (uint i = 0; i < constants.numInputs; i++) {
+        sum += inputs[i].inputData[index];
+    }
+    
+    outputData[index] = sum + float(index) + 4.0;
+    if (index == 1) outputData[index] = 1234.0;
+}*/
+
